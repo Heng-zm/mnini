@@ -3,84 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Telegram Account Detail Mini App</title>
-
-  <!-- Telegram Mini App SDK - must be loaded before your script -->
+  <title>Telegram Account CRM Mini App v2</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     :root {
       --bg: var(--tg-theme-bg-color, #0f172a);
-      --card: var(--tg-theme-secondary-bg-color, #111827);
+      --bg2: var(--tg-theme-secondary-bg-color, #111827);
+      --card: color-mix(in srgb, var(--tg-theme-secondary-bg-color, #111827) 92%, transparent);
       --text: var(--tg-theme-text-color, #f8fafc);
       --muted: var(--tg-theme-hint-color, #94a3b8);
       --link: var(--tg-theme-link-color, #38bdf8);
       --button: var(--tg-theme-button-color, #2481cc);
       --button-text: var(--tg-theme-button-text-color, #ffffff);
-      --danger: #ef4444;
+      --accent: var(--tg-theme-accent-text-color, #38bdf8);
+      --section: var(--tg-theme-section-bg-color, rgba(255,255,255,.06));
+      --danger: var(--tg-theme-destructive_text_color, #ef4444);
       --ok: #22c55e;
-      --border: rgba(148, 163, 184, 0.22);
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --warn: #f59e0b;
+      --border: rgba(148, 163, 184, 0.24);
+      --shadow: 0 22px 70px rgba(0,0,0,.34);
       --radius: 26px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
     }
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
-      min-height: 100vh;
-      min-height: 100dvh;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100%;
       background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.15), transparent 28%),
+        radial-gradient(circle at top left, rgba(56,189,248,.20), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,.13), transparent 26%),
         var(--bg);
       color: var(--text);
-      padding: max(18px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Khmer", sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .app { width: min(520px, 100%); margin: 0 auto; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding:
+        max(14px, var(--safe-top))
+        max(14px, var(--safe-right))
+        max(18px, var(--safe-bottom))
+        max(14px, var(--safe-left));
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      border-radius: 16px;
+      padding: 13px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--button);
+      color: var(--button-text);
+      transition: transform .16s ease, opacity .16s ease, background .16s ease;
+      touch-action: manipulation;
+    }
+
+    button:active { transform: scale(.98); }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: rgba(239,68,68,.14);
+      color: var(--danger);
+      border: 1px solid rgba(239,68,68,.28);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--link);
+      border: 1px solid var(--border);
+    }
+
+    .app {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding-bottom: 10px;
+    }
 
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
+      gap: 11px;
+      min-width: 0;
     }
 
-    .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 16px;
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 18px;
       display: grid;
       place-items: center;
       background: linear-gradient(135deg, var(--button), #22c55e);
       color: #fff;
       box-shadow: var(--shadow);
-      font-size: 20px;
+      font-size: 21px;
+      flex: 0 0 auto;
+    }
+
+    .brand-title {
+      font-weight: 950;
+      letter-spacing: -.04em;
+      line-height: 1.02;
+      font-size: 18px;
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
     }
 
     .pill {
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,.07);
       color: var(--muted);
       padding: 8px 11px;
       border-radius: 999px;
       font-size: 12px;
       white-space: nowrap;
+      max-width: 48%;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .card {
-      background: color-mix(in srgb, var(--card) 92%, transparent);
+      background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
@@ -88,22 +160,29 @@
       backdrop-filter: blur(18px);
     }
 
-    .hero {
-      padding: 26px 22px 20px;
+    @supports not (color: color-mix(in srgb, red, blue)) {
+      .card { background: var(--bg2); }
+    }
+
+    .profile-hero {
+      padding: 24px 18px 18px;
       text-align: center;
       position: relative;
     }
 
-    .status {
+    .status-line {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
       border-radius: 999px;
       padding: 8px 12px;
       color: var(--muted);
       font-size: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
+      max-width: 100%;
     }
 
     .dot {
@@ -111,297 +190,1603 @@
       height: 9px;
       border-radius: 50%;
       background: var(--ok);
-      box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.15);
+      box-shadow: 0 0 0 5px rgba(34,197,94,.15);
+      flex: 0 0 auto;
     }
 
     .dot.off {
       background: var(--danger);
-      box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.15);
+      box-shadow: 0 0 0 5px rgba(239,68,68,.15);
     }
 
-    .avatar {
-      width: 104px;
-      height: 104px;
+    .avatar-wrap {
+      width: 108px;
+      height: 108px;
       margin: 0 auto 14px;
-      border-radius: 32px;
-      object-fit: cover;
+      border-radius: 34px;
+      border: 4px solid rgba(255,255,255,.14);
+      background: linear-gradient(135deg, var(--button), #8b5cf6);
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, var(--button), #8b5cf6);
       color: #fff;
-      font-weight: 900;
       font-size: 34px;
-      border: 4px solid rgba(255,255,255,0.14);
+      font-weight: 950;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,.24);
     }
 
-    .name {
+    .avatar-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity .4s ease;
+    }
+
+    .avatar-wrap img.loaded { opacity: 1; }
+
+    .avatar-wrap.hidden-photo {
+      background: linear-gradient(135deg, #64748b, #334155);
+    }
+
+    .profile-name {
       font-size: 28px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
+      font-weight: 950;
+      letter-spacing: -.045em;
+      line-height: 1.08;
       margin: 0;
+      overflow-wrap: anywhere;
     }
 
-    .username {
-      margin-top: 6px;
+    .profile-user {
+      margin-top: 7px;
       color: var(--link);
-      font-weight: 700;
-      word-break: break-word;
+      font-weight: 800;
+      overflow-wrap: anywhere;
     }
 
-    .grid { display: grid; gap: 10px; padding: 16px; }
+    .badges {
+      margin: 13px auto 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
 
-    .row {
+    .badge {
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .badge.ok {
+      color: #dcfce7;
+      border-color: rgba(34,197,94,.35);
+      background: rgba(34,197,94,.16);
+    }
+
+    .badge.warn {
+      color: #ffedd5;
+      border-color: rgba(245,158,11,.35);
+      background: rgba(245,158,11,.16);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 7px;
+      padding: 10px;
+      border-top: 1px solid var(--border);
+      background: rgba(0,0,0,.10);
+      overflow-x: auto;
+    }
+
+    .tab {
+      min-width: 76px;
+      padding: 11px 8px;
+      border-radius: 16px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid transparent;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .tab.active {
+      color: var(--button-text);
+      background: var(--button);
+      border-color: transparent;
+    }
+
+    .panel {
+      display: none;
+      padding: 16px;
+    }
+
+    .panel.active {
+      display: block;
+      animation: fadeIn .18s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 2px 0 12px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -.03em;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .info-row, .mini-card {
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 14px;
-      background: rgba(255,255,255,0.04);
+      background: rgba(255,255,255,.045);
+    }
+
+    .info-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
     }
 
-    .label { color: var(--muted); font-size: 13px; }
+    .info-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
 
-    .value {
+    .info-value {
       text-align: right;
-      font-weight: 800;
-      word-break: break-word;
+      font-weight: 850;
+      overflow-wrap: anywhere;
       max-width: 62%;
+    }
+
+    .metric {
+      display: grid;
+      gap: 6px;
+    }
+
+    .metric-value {
+      font-size: 25px;
+      font-weight: 950;
+      letter-spacing: -.04em;
+    }
+
+    .progress {
+      height: 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--button), #22c55e);
+      transition: width .35s ease;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .timeline-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border);
+    }
+
+    .timeline-body {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,.045);
+    }
+
+    .timeline-body strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      color: var(--text);
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: color-mix(in srgb, var(--button) 70%, white);
+    }
+
+    .switch-row {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,.045);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .switch-row small {
+      display: block;
+      color: var(--muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .switch {
+      position: relative;
+      width: 52px;
+      height: 30px;
+      flex: 0 0 auto;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,.14);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      transition: .2s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      left: 3px;
+      top: 3px;
+      border-radius: 999px;
+      background: #fff;
+      transition: .2s;
+    }
+
+    .switch input:checked + .slider {
+      background: var(--button);
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(22px);
     }
 
     .actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      padding: 0 16px 16px;
+      margin-top: 12px;
     }
 
-    button {
-      border: 0;
-      border-radius: 16px;
-      padding: 14px 12px;
-      font-weight: 800;
-      cursor: pointer;
-      background: var(--button);
-      color: var(--button-text);
-    }
+    .actions.single { grid-template-columns: 1fr; }
 
-    button.secondary {
-      color: var(--text);
-      background: rgba(255,255,255,0.08);
-      border: 1px solid var(--border);
-    }
-
-    .notice {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-      padding: 0 4px;
-    }
-
-    .raw {
-      display: none;
-      margin: 12px 16px 16px;
-      padding: 14px;
-      border: 1px solid var(--border);
+    .skeleton {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,.08);
       border-radius: 18px;
-      color: var(--muted);
-      background: rgba(0,0,0,0.18);
-      overflow-x: auto;
-      font-size: 12px;
-      line-height: 1.55;
-      white-space: pre-wrap;
-      word-break: break-word;
+      min-height: 18px;
     }
 
-    @supports not (color: color-mix(in srgb, red, blue)) {
-      .card { background: var(--card); }
+    .skeleton:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      animation: shimmer 1.3s infinite;
+    }
+
+    @keyframes shimmer {
+      100% { transform: translateX(100%); }
+    }
+
+    .loading .profile-name,
+    .loading .profile-user {
+      color: transparent;
+      border-radius: 14px;
+      background: rgba(255,255,255,.08);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(18px + var(--safe-bottom));
+      transform: translateX(-50%) translateY(16px);
+      background: rgba(15,23,42,.92);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: var(--shadow);
+      padding: 12px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s ease;
+      max-width: calc(100vw - 28px);
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .empty {
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+    }
+
+    .admin-only {
+      display: none;
+    }
+
+    .is-admin .admin-only {
+      display: block;
+    }
+
+    .compact .profile-hero {
+      padding: 17px 16px 13px;
+    }
+
+    .compact .avatar-wrap {
+      width: 78px;
+      height: 78px;
+      border-radius: 26px;
+      font-size: 25px;
+      margin-bottom: 10px;
+    }
+
+    .compact .profile-name {
+      font-size: 22px;
+    }
+
+    .compact .panel {
+      padding: 12px;
+    }
+
+    .compact .info-row,
+    .compact .mini-card,
+    .compact .switch-row {
+      padding: 11px;
+      border-radius: 16px;
+    }
+
+    code {
+      color: var(--accent);
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1px 5px;
+    }
+
+    @media (max-width: 620px) {
+      .tabs {
+        grid-template-columns: repeat(6, minmax(76px, 1fr));
+      }
+      .grid.two {
+        grid-template-columns: 1fr;
+      }
+      .actions {
+        grid-template-columns: 1fr;
+      }
+      .topbar {
+        align-items: flex-start;
+      }
+      .pill {
+        max-width: 42%;
+      }
     }
   </style>
 </head>
-<body>
-  <main class="app">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo">✦</div>
-        <span>Account Detail</span>
-      </div>
-      <div class="pill" id="platformPill">Telegram Mini App</div>
-    </div>
 
-    <section class="card" id="profileCard">
-      <div class="hero">
-        <div class="status" id="statusBadge">
-          <span class="dot" id="statusDot"></span>
-          <span id="statusText">Auto login checking...</span>
+<body>
+  <main class="app" id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">✦</div>
+        <div>
+          <div class="brand-title" data-i18n="appTitle">Account CRM</div>
+          <div class="brand-subtitle" data-i18n="appSubtitle">Telegram Mini App v2</div>
+        </div>
+      </div>
+      <div class="pill" id="platformPill">Telegram</div>
+    </header>
+
+    <section class="card loading" id="mainCard">
+      <div class="profile-hero">
+        <div class="status-line">
+          <span class="dot" id="loginDot"></span>
+          <span id="loginText" data-i18n="loadingLogin">Checking Telegram login...</span>
         </div>
 
-        <div id="avatar" class="avatar">TG</div>
-        <h1 class="name" id="fullName">Telegram User</h1>
-        <div class="username" id="username">@username</div>
+        <div class="avatar-wrap" id="avatarWrap">TG</div>
+        <h1 class="profile-name" id="profileName">Telegram User</h1>
+        <div class="profile-user" id="profileUser">@username</div>
+        <div class="badges" id="badges"></div>
       </div>
 
-      <div class="grid" id="detailsGrid"></div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="account" data-i18n="tabAccount">Account</button>
+        <button class="tab" data-tab="activity" data-i18n="tabActivity">Activity</button>
+        <button class="tab" data-tab="groups" data-i18n="tabGroups">Groups</button>
+        <button class="tab" data-tab="crm" data-i18n="tabCRM">CRM</button>
+        <button class="tab" data-tab="settings" data-i18n="tabSettings">Settings</button>
+        <button class="tab" data-tab="status" data-i18n="tabStatus">Status</button>
+      </nav>
 
-      <div class="actions">
-        <button id="copyBtn">Copy User ID</button>
-        <button class="secondary" id="rawBtn">Show Raw</button>
-      </div>
+      <section class="panel active" id="panel-account">
+        <div class="section-title">
+          <h2 data-i18n="profileCard">Profile card</h2>
+          <button class="btn-ghost" id="shareBtn" data-i18n="share">Share</button>
+        </div>
+        <div class="grid" id="accountGrid"></div>
+        <div class="actions">
+          <button id="copyIdBtn" data-i18n="copyId">Copy Telegram ID</button>
+          <button class="btn-secondary" id="sendBotBtn" data-i18n="sendBot">Send to Bot</button>
+        </div>
+      </section>
 
-      <pre class="raw" id="rawBox"></pre>
+      <section class="panel" id="panel-activity">
+        <div class="section-title">
+          <h2 data-i18n="myActivity">My Activity</h2>
+          <span class="badge" id="lastSeenBadge">Last seen</span>
+        </div>
+        <div class="grid two">
+          <div class="mini-card metric">
+            <span class="muted" data-i18n="activityCount">Activity events</span>
+            <span class="metric-value" id="activityCount">0</span>
+          </div>
+          <div class="mini-card metric">
+            <span class="muted" data-i18n="joinCount">Join history</span>
+            <span class="metric-value" id="joinCount">0</span>
+          </div>
+        </div>
+        <div style="height: 12px;"></div>
+        <div class="timeline" id="activityList"></div>
+      </section>
+
+      <section class="panel" id="panel-groups">
+        <div class="section-title">
+          <h2 data-i18n="myGroups">My Groups</h2>
+          <span class="badge" id="groupCount">0</span>
+        </div>
+        <div class="grid" id="groupsList"></div>
+      </section>
+
+      <section class="panel" id="panel-crm">
+        <div class="section-title">
+          <h2 data-i18n="trustScore">Trust Score</h2>
+          <span class="badge ok" id="statusBadge">Active</span>
+        </div>
+
+        <div class="grid two">
+          <div class="mini-card metric">
+            <span class="muted" data-i18n="score">Score</span>
+            <span class="metric-value" id="trustScoreNumber">0</span>
+            <div class="progress"><div id="trustBar"></div></div>
+          </div>
+          <div class="mini-card metric">
+            <span class="muted" data-i18n="warnings">Warnings</span>
+            <span class="metric-value" id="warningNumber">0</span>
+            <span class="muted" id="banMuteText">OK</span>
+          </div>
+        </div>
+
+        <div style="height: 12px;"></div>
+        <div class="grid" id="crmDetails"></div>
+
+        <div class="admin-only" style="margin-top: 14px;">
+          <div class="section-title">
+            <h2 data-i18n="adminPanel">Admin CRM Panel</h2>
+            <span class="badge warn" data-i18n="admin">Admin</span>
+          </div>
+
+          <div class="field">
+            <label data-i18n="searchUser">Search user by Telegram ID</label>
+            <input id="searchUserInput" inputmode="numeric" placeholder="123456789" />
+          </div>
+          <div class="actions">
+            <button id="searchUserBtn" data-i18n="search">Search</button>
+            <button class="btn-secondary" id="exportUsersBtn" data-i18n="exportUsers">Export users</button>
+          </div>
+
+          <div style="height: 12px;"></div>
+          <div class="mini-card" id="adminUserBox">
+            <div class="muted" data-i18n="searchHint">Search a user ID to edit note or label.</div>
+          </div>
+
+          <div style="height: 12px;"></div>
+          <div class="field">
+            <label data-i18n="adminNote">Admin note</label>
+            <textarea id="adminNoteInput" placeholder="Add note about this user..."></textarea>
+          </div>
+          <div class="field">
+            <label data-i18n="label">Label</label>
+            <select id="adminLabelSelect">
+              <option value="Normal">Normal</option>
+              <option value="VIP">VIP</option>
+              <option value="Trusted">Trusted</option>
+              <option value="Suspicious">Suspicious</option>
+              <option value="Blocked">Blocked</option>
+            </select>
+          </div>
+          <div class="actions">
+            <button id="saveAdminBtn" data-i18n="saveAdmin">Save Admin Update</button>
+            <button class="btn-danger" id="clearLocalCrmBtn" data-i18n="clearLocal">Clear local CRM</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-settings">
+        <div class="section-title">
+          <h2 data-i18n="settings">Settings</h2>
+          <span class="badge" data-i18n="savedLocal">Saved locally</span>
+        </div>
+
+        <div class="field">
+          <label data-i18n="language">Language</label>
+          <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="km">ភាសាខ្មែរ</option>
+          </select>
+        </div>
+
+        <div class="switch-row">
+          <div>
+            <strong data-i18n="hidePhoto">Hide profile photo</strong>
+            <small data-i18n="hidePhotoDesc">Show initials instead of Telegram photo.</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="hidePhotoToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <div>
+            <strong data-i18n="showId">Show Telegram ID</strong>
+            <small data-i18n="showIdDesc">Control whether your numeric ID appears on the profile card.</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="showIdToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <div>
+            <strong data-i18n="notifications">Notifications</strong>
+            <small data-i18n="notificationsDesc">Save your notification preference for backend sync.</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="notificationToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <div>
+            <strong data-i18n="compactView">Compact view</strong>
+            <small data-i18n="compactViewDesc">Reduce spacing and card size.</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="compactToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="saveSettingsBtn" data-i18n="saveSettings">Save Settings</button>
+          <button class="btn-secondary" id="resetSettingsBtn" data-i18n="reset">Reset</button>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-status">
+        <div class="section-title">
+          <h2 data-i18n="statusChecker">Mini App Status Checker</h2>
+          <button class="btn-ghost" id="refreshStatusBtn" data-i18n="refresh">Refresh</button>
+        </div>
+        <div class="grid" id="statusGrid"></div>
+      </section>
     </section>
 
-    <div class="notice">
-      This Mini App auto-loads the Telegram profile only when opened inside Telegram from your bot button, menu button, or <code>t.me</code> Mini App link.
-    </div>
+    <p class="muted" style="padding: 0 4px;">
+      <span data-i18n="productionNote">Production note:</span>
+      <span data-i18n="productionText">CRM/admin data in this single HTML file is local demo storage. For real admin access, verify Telegram initData on your backend and save data in SQLite, Supabase, PostgreSQL, or Redis.</span>
+    </p>
   </main>
 
+  <div class="toast" id="toast">Saved</div>
+
   <script>
-    const tg = window.Telegram?.WebApp;
+    const tg = window.Telegram?.WebApp || null;
+    const app = document.getElementById("app");
+    const mainCard = document.getElementById("mainCard");
     const $ = (id) => document.getElementById(id);
 
-    function safeText(value, fallback = "Not available") {
-      if (value === undefined || value === null || value === "") return fallback;
+    const I18N = {
+      en: {
+        appTitle: "Account CRM",
+        appSubtitle: "Telegram Mini App v2",
+        loadingLogin: "Checking Telegram login...",
+        openInside: "Open inside Telegram",
+        loggedIn: "Auto logged in with Telegram",
+        demoMode: "Demo mode outside Telegram",
+        tabAccount: "Account",
+        tabActivity: "Activity",
+        tabGroups: "Groups",
+        tabCRM: "CRM",
+        tabSettings: "Settings",
+        tabStatus: "Status",
+        profileCard: "Profile card",
+        share: "Share",
+        copyId: "Copy Telegram ID",
+        sendBot: "Send to Bot",
+        myActivity: "My Activity",
+        activityCount: "Activity events",
+        joinCount: "Join history",
+        myGroups: "My Groups",
+        trustScore: "Trust Score",
+        score: "Score",
+        warnings: "Warnings",
+        adminPanel: "Admin CRM Panel",
+        admin: "Admin",
+        searchUser: "Search user by Telegram ID",
+        search: "Search",
+        exportUsers: "Export users",
+        searchHint: "Search a user ID to edit note or label.",
+        adminNote: "Admin note",
+        label: "Label",
+        saveAdmin: "Save Admin Update",
+        clearLocal: "Clear local CRM",
+        settings: "Settings",
+        savedLocal: "Saved locally",
+        language: "Language",
+        hidePhoto: "Hide profile photo",
+        hidePhotoDesc: "Show initials instead of Telegram photo.",
+        showId: "Show Telegram ID",
+        showIdDesc: "Control whether your numeric ID appears on the profile card.",
+        notifications: "Notifications",
+        notificationsDesc: "Save your notification preference for backend sync.",
+        compactView: "Compact view",
+        compactViewDesc: "Reduce spacing and card size.",
+        saveSettings: "Save Settings",
+        reset: "Reset",
+        statusChecker: "Mini App Status Checker",
+        refresh: "Refresh",
+        productionNote: "Production note:",
+        productionText: "CRM/admin data in this single HTML file is local demo storage. For real admin access, verify Telegram initData on your backend and save data in SQLite, Supabase, PostgreSQL, or Redis.",
+        telegramId: "Telegram ID",
+        firstName: "First name",
+        lastName: "Last name",
+        username: "Username",
+        profilePhoto: "Profile photo",
+        languageCode: "Language",
+        premium: "Premium",
+        botWrite: "Bot write permission",
+        startParam: "Start parameter / referral",
+        authDate: "Auth date",
+        noUsername: "No public username",
+        notAvailable: "Not available",
+        yes: "Yes",
+        no: "No",
+        copied: "Copied!",
+        settingsSaved: "Settings saved",
+        resetDone: "Settings reset",
+        exported: "Exported",
+        userNotFound: "User not found in local CRM",
+        adminSaved: "Admin update saved",
+        localCleared: "Local CRM cleared",
+        active: "Active",
+        muted: "Muted",
+        banned: "Banned",
+        normal: "Normal",
+        accountOpened: "Opened Mini App",
+        currentSession: "Current session",
+        noGroups: "No group data from Telegram. Connect backend to show real groups.",
+        noWarnings: "No warnings",
+        notesEmpty: "No admin notes",
+        shareText: "Telegram profile card",
+        outsideHint: "Launch this file from your bot Mini App button to read the real Telegram profile."
+      },
+      km: {
+        appTitle: "គណនី CRM",
+        appSubtitle: "Telegram Mini App v2",
+        loadingLogin: "កំពុងពិនិត្យ Telegram login...",
+        openInside: "បើកនៅក្នុង Telegram",
+        loggedIn: "បានចូលដោយស្វ័យប្រវត្តិជាមួយ Telegram",
+        demoMode: "Demo mode ក្រៅ Telegram",
+        tabAccount: "គណនី",
+        tabActivity: "សកម្មភាព",
+        tabGroups: "ក្រុម",
+        tabCRM: "CRM",
+        tabSettings: "ការកំណត់",
+        tabStatus: "ស្ថានភាព",
+        profileCard: "កាត Profile",
+        share: "ចែករំលែក",
+        copyId: "ចម្លង Telegram ID",
+        sendBot: "ផ្ញើទៅ Bot",
+        myActivity: "សកម្មភាពរបស់ខ្ញុំ",
+        activityCount: "ចំនួនសកម្មភាព",
+        joinCount: "ប្រវត្តិចូលរួម",
+        myGroups: "ក្រុមរបស់ខ្ញុំ",
+        trustScore: "ពិន្ទុទុកចិត្ត",
+        score: "ពិន្ទុ",
+        warnings: "ការព្រមាន",
+        adminPanel: "Admin CRM Panel",
+        admin: "Admin",
+        searchUser: "ស្វែងរក User តាម Telegram ID",
+        search: "ស្វែងរក",
+        exportUsers: "Export users",
+        searchHint: "ស្វែងរក User ID ដើម្បីកែ Note ឬ Label។",
+        adminNote: "Admin note",
+        label: "Label",
+        saveAdmin: "រក្សាទុក Admin Update",
+        clearLocal: "លុប CRM ក្នុងម៉ាស៊ីន",
+        settings: "ការកំណត់",
+        savedLocal: "រក្សាទុកក្នុងម៉ាស៊ីន",
+        language: "ភាសា",
+        hidePhoto: "លាក់រូប Profile",
+        hidePhotoDesc: "បង្ហាញអក្សរកាត់ជំនួសរូប Telegram។",
+        showId: "បង្ហាញ Telegram ID",
+        showIdDesc: "កំណត់ថាតើត្រូវបង្ហាញលេខ ID លើ Profile card ឬអត់។",
+        notifications: "ការជូនដំណឹង",
+        notificationsDesc: "រក្សាទុកចំណូលចិត្ត notification សម្រាប់ sync ទៅ backend។",
+        compactView: "មើលបែបតូច",
+        compactViewDesc: "បន្ថយចន្លោះនិងទំហំកាត។",
+        saveSettings: "រក្សាទុកការកំណត់",
+        reset: "Reset",
+        statusChecker: "Mini App Status Checker",
+        refresh: "Refresh",
+        productionNote: "ចំណាំ Production:",
+        productionText: "CRM/admin data ក្នុង HTML មួយនេះគឺ local demo storage។ ប្រើពិតត្រូវ verify Telegram initData នៅ backend ហើយរក្សាទុកក្នុង SQLite, Supabase, PostgreSQL ឬ Redis។",
+        telegramId: "Telegram ID",
+        firstName: "នាមខ្លួន",
+        lastName: "នាមត្រកូល",
+        username: "Username",
+        profilePhoto: "រូប Profile",
+        languageCode: "ភាសា",
+        premium: "Premium",
+        botWrite: "សិទ្ធិ Bot ផ្ញើ PM",
+        startParam: "Start parameter / referral",
+        authDate: "ថ្ងៃ Auth",
+        noUsername: "មិនមាន username សាធារណៈ",
+        notAvailable: "មិនមាន",
+        yes: "បាទ/ចាស",
+        no: "ទេ",
+        copied: "បានចម្លង!",
+        settingsSaved: "បានរក្សាទុកការកំណត់",
+        resetDone: "បាន Reset",
+        exported: "បាន Export",
+        userNotFound: "រកមិនឃើញ User ក្នុង local CRM",
+        adminSaved: "បានរក្សាទុក Admin update",
+        localCleared: "បានលុប local CRM",
+        active: "សកម្ម",
+        muted: "បាន mute",
+        banned: "បាន ban",
+        normal: "ធម្មតា",
+        accountOpened: "បានបើក Mini App",
+        currentSession: "Session បច្ចុប្បន្ន",
+        noGroups: "មិនមាន group data ពី Telegram។ ភ្ជាប់ backend ដើម្បីបង្ហាញ groups ពិត។",
+        noWarnings: "មិនមាន warning",
+        notesEmpty: "មិនមាន admin note",
+        shareText: "Telegram profile card",
+        outsideHint: "បើក file នេះពី bot Mini App button ដើម្បីអាន Telegram profile ពិត។"
+      }
+    };
+
+    const defaultSettings = {
+      language: "en",
+      hidePhoto: false,
+      showId: true,
+      notifications: true,
+      compactView: false
+    };
+
+    let state = {
+      activeTab: "account",
+      user: null,
+      initData: {},
+      settings: { ...defaultSettings },
+      crm: {},
+      selectedAdminUserId: null,
+      isAdmin: false,
+      isTelegram: !!tg
+    };
+
+    function t(key) {
+      return I18N[state.settings.language]?.[key] || I18N.en[key] || key;
+    }
+
+    function boolText(value) {
+      if (value === true) return t("yes");
+      if (value === false) return t("no");
+      return t("notAvailable");
+    }
+
+    function safe(value, fallbackKey = "notAvailable") {
+      if (value === undefined || value === null || value === "") return t(fallbackKey);
       return String(value);
+    }
+
+    function nowIso() {
+      return new Date().toISOString();
+    }
+
+    function prettyDate(value) {
+      if (!value) return t("notAvailable");
+      const date = typeof value === "number" ? new Date(value * 1000) : new Date(value);
+      if (Number.isNaN(date.getTime())) return t("notAvailable");
+      return date.toLocaleString(state.settings.language === "km" ? "km-KH" : undefined);
     }
 
     function initials(user) {
       const first = user?.first_name?.trim()?.[0] || "";
       const last = user?.last_name?.trim()?.[0] || "";
-      const fromName = (first + last).toUpperCase();
-      if (fromName) return fromName;
+      const name = (first + last).toUpperCase();
+      if (name) return name;
       if (user?.username) return user.username.slice(0, 2).toUpperCase();
       return "TG";
     }
 
-    function boolText(value) {
-      if (value === true) return "Yes";
-      if (value === false) return "No";
-      return "Not available";
+    function toast(message) {
+      const box = $("toast");
+      box.textContent = message;
+      box.classList.add("show");
+      setTimeout(() => box.classList.remove("show"), 1800);
     }
 
-    function addRow(label, value) {
-      const row = document.createElement("div");
-      row.className = "row";
-      row.innerHTML = `<div class="label"></div><div class="value"></div>`;
-      row.querySelector(".label").textContent = label;
-      row.querySelector(".value").textContent = safeText(value);
-      $("detailsGrid").appendChild(row);
-    }
-
-    function setStatus(ok, text) {
-      $("statusDot").classList.toggle("off", !ok);
-      $("statusText").textContent = text;
-    }
-
-    function showOutsideTelegram() {
-      setStatus(false, "Open inside Telegram");
-      $("avatar").textContent = "!";
-      $("fullName").textContent = "No Telegram profile found";
-      $("username").textContent = "Launch this page from your bot Mini App button";
-      $("detailsGrid").innerHTML = "";
-      addRow("Status", "Not opened inside Telegram");
-      addRow("Fix", "Open via Telegram bot web_app button/menu");
-      $("platformPill").textContent = "Browser";
-      $("copyBtn").disabled = true;
-      $("rawBox").textContent = "Telegram.WebApp is not available.";
-    }
-
-    function renderUser() {
-      if (!tg) {
-        showOutsideTelegram();
-        return;
-      }
-
-      tg.ready();
-      tg.expand();
-
+    function haptic(type = "selection") {
       try {
-        tg.setHeaderColor(tg.themeParams?.secondary_bg_color || "#111827");
-        tg.setBackgroundColor(tg.themeParams?.bg_color || "#0f172a");
+        if (!tg?.HapticFeedback) return;
+        if (type === "success") tg.HapticFeedback.notificationOccurred("success");
+        else if (type === "error") tg.HapticFeedback.notificationOccurred("error");
+        else tg.HapticFeedback.selectionChanged();
       } catch (_) {}
+    }
 
-      const data = tg.initDataUnsafe || {};
-      const user = data.user;
+    function storageKey(name) {
+      const id = state.user?.id || "demo";
+      return `tg-crm-miniapp-v2:${name}:${id}`;
+    }
 
-      $("platformPill").textContent = `${safeText(tg.platform, "unknown")} · v${safeText(tg.version, "?")}`;
+    function globalStorageKey(name) {
+      return `tg-crm-miniapp-v2:${name}`;
+    }
 
-      if (!user) {
-        showOutsideTelegram();
-        $("rawBox").textContent = JSON.stringify(data, null, 2);
-        return;
+    function readJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (_) {
+        return fallback;
       }
+    }
 
-      setStatus(true, "Auto logged in with Telegram");
+    function writeJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
 
-      const firstName = safeText(user.first_name, "");
-      const lastName = safeText(user.last_name, "");
-      const fullName = `${firstName} ${lastName}`.trim() || "Telegram User";
+    function getQueryParams() {
+      return new URLSearchParams(window.location.search);
+    }
 
-      $("fullName").textContent = fullName;
-      $("username").textContent = user.username ? `@${user.username}` : "No public username";
-
-      const avatar = $("avatar");
-      avatar.textContent = initials(user);
-
-      if (user.photo_url) {
-        const img = document.createElement("img");
-        img.className = "avatar";
-        img.id = "avatar";
-        img.alt = "Telegram profile photo";
-        img.src = user.photo_url;
-        img.onerror = () => {
-          const fallback = document.createElement("div");
-          fallback.id = "avatar";
-          fallback.className = "avatar";
-          fallback.textContent = initials(user);
-          img.replaceWith(fallback);
-        };
-        avatar.replaceWith(img);
-      }
-
-      $("detailsGrid").innerHTML = "";
-      addRow("Telegram ID", user.id);
-      addRow("First name", user.first_name);
-      addRow("Last name", user.last_name);
-      addRow("Username", user.username ? `@${user.username}` : "Not set");
-      addRow("Language", user.language_code);
-      addRow("Premium", boolText(user.is_premium));
-      addRow("Added to attachment menu", boolText(user.added_to_attachment_menu));
-      addRow("Allows bot write to PM", boolText(user.allows_write_to_pm));
-      addRow("Start parameter", data.start_param);
-      addRow("Auth date", data.auth_date ? new Date(data.auth_date * 1000).toLocaleString() : "Not available");
-
-      $("rawBox").textContent = JSON.stringify({
-        user,
-        initDataUnsafe: data,
-        platform: tg.platform,
-        version: tg.version,
-        colorScheme: tg.colorScheme,
-        initData: tg.initData ? "Available - verify on backend for secure actions" : "Not available"
-      }, null, 2);
-
-      $("copyBtn").onclick = async () => {
-        try {
-          await navigator.clipboard.writeText(String(user.id));
-          tg.HapticFeedback?.notificationOccurred?.("success");
-          tg.showAlert?.("Telegram ID copied!");
-        } catch (_) {
-          alert("Telegram ID: " + user.id);
-        }
+    function makeDemoUser() {
+      return {
+        id: 123456789,
+        first_name: "Demo",
+        last_name: "User",
+        username: "demo_user",
+        language_code: "en",
+        is_premium: true,
+        allows_write_to_pm: true,
+        added_to_attachment_menu: false,
+        photo_url: ""
       };
     }
 
-    $("rawBtn").addEventListener("click", () => {
-      const raw = $("rawBox");
-      const visible = raw.style.display === "block";
-      raw.style.display = visible ? "none" : "block";
-      $("rawBtn").textContent = visible ? "Show Raw" : "Hide Raw";
-    });
+    function detectTelegram() {
+      if (!tg) {
+        state.isTelegram = false;
+        state.initData = {
+          start_param: getQueryParams().get("startapp") || getQueryParams().get("ref") || "demo_ref"
+        };
+        state.user = makeDemoUser();
+        return;
+      }
 
-    renderUser();
+      try {
+        tg.ready();
+        tg.expand();
+      } catch (_) {}
+
+      state.isTelegram = true;
+      state.initData = tg.initDataUnsafe || {};
+      state.user = state.initData.user || makeDemoUser();
+
+      try {
+        if (tg.requestFullscreen && !tg.isFullscreen) {
+          // Do not force fullscreen automatically on every open; the status panel shows support.
+        }
+      } catch (_) {}
+    }
+
+    function loadSettings() {
+      const userLang = state.user?.language_code?.toLowerCase().startsWith("km") ? "km" : "en";
+      const saved = readJson(storageKey("settings"), null);
+      state.settings = { ...defaultSettings, language: userLang, ...(saved || {}) };
+      document.documentElement.lang = state.settings.language;
+      app.classList.toggle("compact", !!state.settings.compactView);
+    }
+
+    function loadCrm() {
+      state.crm = readJson(globalStorageKey("crm-users"), {});
+
+      const id = String(state.user?.id || "demo");
+      const existing = state.crm[id] || {};
+      const user = state.user || makeDemoUser();
+
+      state.crm[id] = {
+        id: user.id,
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        username: user.username || "",
+        language_code: user.language_code || "",
+        photo_url: user.photo_url || "",
+        premium: !!user.is_premium,
+        bot_write: !!user.allows_write_to_pm,
+        label: existing.label || "Normal",
+        trustScore: typeof existing.trustScore === "number" ? existing.trustScore : 92,
+        warnings: Array.isArray(existing.warnings) ? existing.warnings : [],
+        notes: existing.notes || "",
+        muted: !!existing.muted,
+        banned: !!existing.banned,
+        lastSeen: nowIso(),
+        createdAt: existing.createdAt || nowIso(),
+        joinHistory: Array.isArray(existing.joinHistory) ? existing.joinHistory : [
+          { title: t("currentSession"), date: nowIso(), source: state.initData.start_param || "direct" }
+        ],
+        activity: [
+          { type: "open", title: t("accountOpened"), date: nowIso(), detail: state.isTelegram ? "Telegram WebApp" : "Browser demo" },
+          ...(Array.isArray(existing.activity) ? existing.activity.slice(0, 11) : [])
+        ],
+        groups: Array.isArray(existing.groups) ? existing.groups : []
+      };
+
+      if (state.initData.chat) {
+        const chat = state.initData.chat;
+        const groupId = String(chat.id || state.initData.chat_instance || "chat");
+        const exists = state.crm[id].groups.some(g => String(g.id) === groupId);
+        if (!exists) {
+          state.crm[id].groups.unshift({
+            id: groupId,
+            title: chat.title || "Telegram Chat",
+            type: state.initData.chat_type || "chat",
+            joinedAt: nowIso(),
+            role: "member"
+          });
+        }
+      }
+
+      writeJson(globalStorageKey("crm-users"), state.crm);
+    }
+
+    function detectAdmin() {
+      const params = getQueryParams();
+      const adminIds = (params.get("admins") || params.get("admin_ids") || "")
+        .split(",")
+        .map(x => x.trim())
+        .filter(Boolean);
+
+      state.isAdmin =
+        params.get("admin") === "1" ||
+        adminIds.includes(String(state.user?.id));
+
+      document.body.classList.toggle("is-admin", state.isAdmin);
+    }
+
+    function applyTheme() {
+      if (!tg) return;
+      try {
+        const p = tg.themeParams || {};
+        if (p.bg_color) document.documentElement.style.setProperty("--bg", p.bg_color);
+        if (p.secondary_bg_color) document.documentElement.style.setProperty("--bg2", p.secondary_bg_color);
+        if (p.text_color) document.documentElement.style.setProperty("--text", p.text_color);
+        if (p.hint_color) document.documentElement.style.setProperty("--muted", p.hint_color);
+        if (p.link_color) document.documentElement.style.setProperty("--link", p.link_color);
+        if (p.button_color) document.documentElement.style.setProperty("--button", p.button_color);
+        if (p.button_text_color) document.documentElement.style.setProperty("--button-text", p.button_text_color);
+        if (p.accent_text_color) document.documentElement.style.setProperty("--accent", p.accent_text_color);
+        tg.setHeaderColor(p.secondary_bg_color || p.bg_color || "#111827");
+        tg.setBackgroundColor(p.bg_color || "#0f172a");
+        if (tg.setBottomBarColor) tg.setBottomBarColor(p.bottom_bar_bg_color || p.secondary_bg_color || p.bg_color || "#111827");
+      } catch (_) {}
+    }
+
+    function translatePage() {
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        el.textContent = t(key);
+      });
+
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        el.setAttribute("placeholder", t(key));
+      });
+    }
+
+    function row(label, value) {
+      const div = document.createElement("div");
+      div.className = "info-row";
+      div.innerHTML = `<div class="info-label"></div><div class="info-value"></div>`;
+      div.querySelector(".info-label").textContent = label;
+      div.querySelector(".info-value").textContent = safe(value);
+      return div;
+    }
+
+    function badge(text, kind = "") {
+      const span = document.createElement("span");
+      span.className = `badge ${kind}`;
+      span.textContent = text;
+      return span;
+    }
+
+    function renderProfileHeader() {
+      const user = state.user || makeDemoUser();
+      const fullName = `${user.first_name || ""} ${user.last_name || ""}`.trim() || "Telegram User";
+
+      $("profileName").textContent = fullName;
+      $("profileUser").textContent = user.username ? `@${user.username}` : t("noUsername");
+      $("loginText").textContent = state.isTelegram ? t("loggedIn") : t("demoMode");
+      $("loginDot").classList.toggle("off", !state.isTelegram);
+      $("platformPill").textContent = tg ? `${safe(tg.platform)} · v${safe(tg.version)}` : "Browser demo";
+
+      const wrap = $("avatarWrap");
+      wrap.innerHTML = "";
+      wrap.classList.toggle("hidden-photo", state.settings.hidePhoto);
+
+      if (!state.settings.hidePhoto && user.photo_url) {
+        const img = new Image();
+        img.alt = "Telegram profile photo";
+        img.src = user.photo_url;
+        img.onload = () => img.classList.add("loaded");
+        img.onerror = () => {
+          wrap.textContent = initials(user);
+        };
+        wrap.appendChild(img);
+      } else {
+        wrap.textContent = initials(user);
+      }
+
+      const badges = $("badges");
+      badges.innerHTML = "";
+      badges.appendChild(badge(user.is_premium ? "Premium" : "Standard", user.is_premium ? "ok" : ""));
+      badges.appendChild(badge(user.allows_write_to_pm ? "Bot PM OK" : "Bot PM N/A", user.allows_write_to_pm ? "ok" : "warn"));
+      badges.appendChild(badge(state.crm[String(user.id)]?.label || "Normal", ""));
+      if (state.isAdmin) badges.appendChild(badge("Admin", "warn"));
+    }
+
+    function renderAccount() {
+      const user = state.user || makeDemoUser();
+      const data = state.initData || {};
+      const grid = $("accountGrid");
+      grid.innerHTML = "";
+
+      if (state.settings.showId) grid.appendChild(row(t("telegramId"), user.id));
+      grid.appendChild(row(t("firstName"), user.first_name));
+      grid.appendChild(row(t("lastName"), user.last_name));
+      grid.appendChild(row(t("username"), user.username ? `@${user.username}` : t("noUsername")));
+      grid.appendChild(row(t("profilePhoto"), user.photo_url ? "Available" : t("notAvailable")));
+      grid.appendChild(row(t("languageCode"), user.language_code));
+      grid.appendChild(row(t("premium"), boolText(user.is_premium)));
+      grid.appendChild(row(t("botWrite"), boolText(user.allows_write_to_pm)));
+      grid.appendChild(row(t("startParam"), data.start_param || getQueryParams().get("startapp") || getQueryParams().get("ref")));
+      grid.appendChild(row(t("authDate"), data.auth_date ? prettyDate(data.auth_date) : t("notAvailable")));
+    }
+
+    function renderActivity() {
+      const id = String(state.user?.id || "demo");
+      const record = state.crm[id] || {};
+      $("lastSeenBadge").textContent = prettyDate(record.lastSeen);
+      $("activityCount").textContent = record.activity?.length || 0;
+      $("joinCount").textContent = record.joinHistory?.length || 0;
+
+      const list = $("activityList");
+      list.innerHTML = "";
+
+      const items = [
+        ...(record.activity || []),
+        ...(record.joinHistory || []).map(x => ({
+          type: "join",
+          title: x.title || "Join",
+          date: x.date,
+          detail: x.source || ""
+        }))
+      ].slice(0, 16);
+
+      if (!items.length) {
+        list.innerHTML = `<div class="empty">${t("notAvailable")}</div>`;
+        return;
+      }
+
+      for (const item of items) {
+        const el = document.createElement("div");
+        el.className = "timeline-item";
+        el.innerHTML = `
+          <div class="timeline-icon">${item.type === "join" ? "➕" : "•"}</div>
+          <div class="timeline-body">
+            <strong></strong>
+            <div class="muted"></div>
+          </div>
+        `;
+        el.querySelector("strong").textContent = item.title || item.type || "Activity";
+        el.querySelector(".muted").textContent = `${prettyDate(item.date)}${item.detail ? " · " + item.detail : ""}`;
+        list.appendChild(el);
+      }
+    }
+
+    function renderGroups() {
+      const id = String(state.user?.id || "demo");
+      const record = state.crm[id] || {};
+      const groups = record.groups || [];
+      $("groupCount").textContent = groups.length;
+
+      const list = $("groupsList");
+      list.innerHTML = "";
+
+      if (!groups.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = t("noGroups");
+        list.appendChild(empty);
+        return;
+      }
+
+      for (const group of groups) {
+        const el = document.createElement("div");
+        el.className = "mini-card";
+        el.innerHTML = `
+          <strong></strong>
+          <div class="muted"></div>
+          <div style="height: 8px;"></div>
+          <span class="badge"></span>
+        `;
+        el.querySelector("strong").textContent = group.title || "Group";
+        el.querySelector(".muted").textContent = `ID: ${group.id} · ${safe(group.type)}`;
+        el.querySelector(".badge").textContent = `${group.role || "member"} · ${prettyDate(group.joinedAt)}`;
+        list.appendChild(el);
+      }
+    }
+
+    function renderCrm() {
+      const id = String(state.user?.id || "demo");
+      const record = state.crm[id] || {};
+      const score = Math.max(0, Math.min(100, record.trustScore || 0));
+      const warnings = record.warnings || [];
+
+      $("trustScoreNumber").textContent = score;
+      $("trustBar").style.width = `${score}%`;
+      $("warningNumber").textContent = warnings.length;
+      $("banMuteText").textContent = record.banned ? t("banned") : record.muted ? t("muted") : "OK";
+      $("statusBadge").textContent = record.banned ? t("banned") : record.muted ? t("muted") : t("active");
+      $("statusBadge").className = `badge ${record.banned || record.muted ? "warn" : "ok"}`;
+
+      const details = $("crmDetails");
+      details.innerHTML = "";
+      details.appendChild(row("Label", record.label || t("normal")));
+      details.appendChild(row("Last seen", prettyDate(record.lastSeen)));
+      details.appendChild(row("Ban / mute status", record.banned ? t("banned") : record.muted ? t("muted") : "OK"));
+      details.appendChild(row("Warnings", warnings.length ? warnings.map(w => w.reason || w).join(", ") : t("noWarnings")));
+      details.appendChild(row("Admin notes", record.notes || t("notesEmpty")));
+
+      if (state.isAdmin && !state.selectedAdminUserId) {
+        state.selectedAdminUserId = id;
+        $("searchUserInput").value = id;
+      }
+
+      if (state.isAdmin) renderAdminUserBox(state.selectedAdminUserId || id);
+    }
+
+    function renderAdminUserBox(id) {
+      const box = $("adminUserBox");
+      const record = state.crm[String(id)];
+
+      if (!record) {
+        box.innerHTML = `<div class="muted">${t("userNotFound")}</div>`;
+        $("adminNoteInput").value = "";
+        $("adminLabelSelect").value = "Normal";
+        return;
+      }
+
+      const fullName = `${record.first_name || ""} ${record.last_name || ""}`.trim() || "Telegram User";
+      box.innerHTML = `
+        <strong>${fullName}</strong>
+        <div class="muted">ID: ${record.id} · @${record.username || "none"}</div>
+        <div style="height: 8px;"></div>
+        <span class="badge">${record.label || "Normal"}</span>
+        <span class="badge">${prettyDate(record.lastSeen)}</span>
+      `;
+
+      $("adminNoteInput").value = record.notes || "";
+      $("adminLabelSelect").value = record.label || "Normal";
+    }
+
+    function renderSettings() {
+      $("languageSelect").value = state.settings.language;
+      $("hidePhotoToggle").checked = !!state.settings.hidePhoto;
+      $("showIdToggle").checked = !!state.settings.showId;
+      $("notificationToggle").checked = !!state.settings.notifications;
+      $("compactToggle").checked = !!state.settings.compactView;
+    }
+
+    function statusValue(value) {
+      if (value === undefined || value === null || value === "") return t("notAvailable");
+      if (typeof value === "boolean") return value ? t("yes") : t("no");
+      return String(value);
+    }
+
+    function renderStatus() {
+      const grid = $("statusGrid");
+      grid.innerHTML = "";
+
+      const safeArea = tg?.safeAreaInset || {};
+      const contentSafeArea = tg?.contentSafeAreaInset || {};
+      const rows = [
+        ["Telegram platform", tg?.platform || "Browser"],
+        ["WebApp version", tg?.version || "N/A"],
+        ["Color scheme", tg?.colorScheme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")],
+        ["Fullscreen support", !!tg?.requestFullscreen],
+        ["Is fullscreen", !!tg?.isFullscreen],
+        ["Is active", tg?.isActive ?? !document.hidden],
+        ["Safe area inset", JSON.stringify(safeArea)],
+        ["Content safe area", JSON.stringify(contentSafeArea)],
+        ["Viewport height", tg?.viewportHeight ? Math.round(tg.viewportHeight) + "px" : window.innerHeight + "px"],
+        ["Stable viewport", tg?.viewportStableHeight ? Math.round(tg.viewportStableHeight) + "px" : "N/A"],
+        ["Start parameter", state.initData?.start_param || "N/A"],
+        ["Init data", tg?.initData ? "Available - verify on backend" : "N/A"]
+      ];
+
+      for (const [label, value] of rows) {
+        grid.appendChild(row(label, statusValue(value)));
+      }
+    }
+
+    function renderAll() {
+      translatePage();
+      renderProfileHeader();
+      renderAccount();
+      renderActivity();
+      renderGroups();
+      renderCrm();
+      renderSettings();
+      renderStatus();
+      setupTelegramButtons();
+      setTimeout(() => mainCard.classList.remove("loading"), 250);
+    }
+
+    function setActiveTab(tab) {
+      state.activeTab = tab;
+      document.querySelectorAll(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+      document.querySelectorAll(".panel").forEach(panel => panel.classList.toggle("active", panel.id === `panel-${tab}`));
+
+      if (tg?.BackButton) {
+        if (tab === "account") tg.BackButton.hide();
+        else tg.BackButton.show();
+      }
+
+      setupTelegramButtons();
+      haptic();
+    }
+
+    function setupTelegramButtons() {
+      if (!tg?.MainButton) return;
+
+      try {
+        if (state.activeTab === "account") {
+          tg.MainButton.setText(t("share"));
+          tg.MainButton.show();
+          tg.MainButton.onClick(shareProfile);
+        } else if (state.activeTab === "settings") {
+          tg.MainButton.setText(t("saveSettings"));
+          tg.MainButton.show();
+          tg.MainButton.onClick(saveSettingsFromForm);
+        } else if (state.activeTab === "crm" && state.isAdmin) {
+          tg.MainButton.setText(t("exportUsers"));
+          tg.MainButton.show();
+          tg.MainButton.onClick(exportUsers);
+        } else {
+          tg.MainButton.hide();
+        }
+      } catch (_) {}
+    }
+
+    function saveSettingsFromForm() {
+      state.settings = {
+        language: $("languageSelect").value,
+        hidePhoto: $("hidePhotoToggle").checked,
+        showId: $("showIdToggle").checked,
+        notifications: $("notificationToggle").checked,
+        compactView: $("compactToggle").checked
+      };
+
+      writeJson(storageKey("settings"), state.settings);
+      document.documentElement.lang = state.settings.language;
+      app.classList.toggle("compact", !!state.settings.compactView);
+      haptic("success");
+      toast(t("settingsSaved"));
+      renderAll();
+    }
+
+    async function copyText(text, message) {
+      try {
+        await navigator.clipboard.writeText(text);
+        haptic("success");
+        toast(message || t("copied"));
+      } catch (_) {
+        alert(text);
+      }
+    }
+
+    function makeShareText() {
+      const user = state.user || makeDemoUser();
+      const fullName = `${user.first_name || ""} ${user.last_name || ""}`.trim() || "Telegram User";
+      const referral = state.initData?.start_param || getQueryParams().get("startapp") || getQueryParams().get("ref") || "N/A";
+      return [
+        `👤 ${t("shareText")}`,
+        `Name: ${fullName}`,
+        state.settings.showId ? `Telegram ID: ${user.id}` : "",
+        `Username: ${user.username ? "@" + user.username : "N/A"}`,
+        `Language: ${user.language_code || "N/A"}`,
+        `Premium: ${user.is_premium ? "Yes" : "No"}`,
+        `Referral: ${referral}`
+      ].filter(Boolean).join("\n");
+    }
+
+    async function shareProfile() {
+      const text = makeShareText();
+
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: "Telegram Profile", text });
+          haptic("success");
+          return;
+        }
+      } catch (_) {}
+
+      await copyText(text, t("copied"));
+    }
+
+    function sendToBot() {
+      if (!tg?.sendData) {
+        toast(state.isTelegram ? "sendData unavailable" : t("outsideHint"));
+        return;
+      }
+
+      const payload = {
+        type: "profile_sync",
+        user: state.user,
+        settings: state.settings,
+        start_param: state.initData?.start_param || null,
+        sent_at: nowIso()
+      };
+
+      try {
+        tg.sendData(JSON.stringify(payload));
+        haptic("success");
+        toast("Sent to bot");
+      } catch (e) {
+        haptic("error");
+        toast("Bot send failed");
+      }
+    }
+
+    function searchAdminUser() {
+      const id = $("searchUserInput").value.trim();
+      if (!id) return;
+      state.selectedAdminUserId = id;
+      renderAdminUserBox(id);
+      haptic();
+    }
+
+    function saveAdminUpdate() {
+      const id = String(state.selectedAdminUserId || $("searchUserInput").value.trim() || state.user?.id);
+      if (!state.crm[id]) {
+        toast(t("userNotFound"));
+        haptic("error");
+        return;
+      }
+
+      state.crm[id].notes = $("adminNoteInput").value.trim();
+      state.crm[id].label = $("adminLabelSelect").value;
+      state.crm[id].lastAdminUpdate = nowIso();
+      writeJson(globalStorageKey("crm-users"), state.crm);
+
+      haptic("success");
+      toast(t("adminSaved"));
+      renderAll();
+    }
+
+    function exportUsers() {
+      const payload = {
+        exported_at: nowIso(),
+        app: "Telegram Account CRM Mini App v2",
+        users: Object.values(state.crm)
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `telegram-crm-users-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      haptic("success");
+      toast(t("exported"));
+    }
+
+    function clearLocalCrm() {
+      if (!confirm("Clear local CRM data?")) return;
+      localStorage.removeItem(globalStorageKey("crm-users"));
+      loadCrm();
+      haptic("success");
+      toast(t("localCleared"));
+      renderAll();
+    }
+
+    function bindEvents() {
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+      });
+
+      $("shareBtn").addEventListener("click", shareProfile);
+      $("copyIdBtn").addEventListener("click", () => copyText(String(state.user?.id || ""), t("copied")));
+      $("sendBotBtn").addEventListener("click", sendToBot);
+
+      $("saveSettingsBtn").addEventListener("click", saveSettingsFromForm);
+      $("resetSettingsBtn").addEventListener("click", () => {
+        state.settings = {
+          ...defaultSettings,
+          language: state.user?.language_code?.toLowerCase().startsWith("km") ? "km" : "en"
+        };
+        writeJson(storageKey("settings"), state.settings);
+        haptic("success");
+        toast(t("resetDone"));
+        renderAll();
+      });
+
+      $("languageSelect").addEventListener("change", () => {
+        state.settings.language = $("languageSelect").value;
+        writeJson(storageKey("settings"), state.settings);
+        renderAll();
+      });
+
+      $("searchUserBtn").addEventListener("click", searchAdminUser);
+      $("saveAdminBtn").addEventListener("click", saveAdminUpdate);
+      $("exportUsersBtn").addEventListener("click", exportUsers);
+      $("clearLocalCrmBtn").addEventListener("click", clearLocalCrm);
+      $("refreshStatusBtn").addEventListener("click", () => {
+        haptic();
+        renderStatus();
+      });
+
+      document.addEventListener("visibilitychange", renderStatus);
+
+      if (tg?.BackButton) {
+        tg.BackButton.onClick(() => setActiveTab("account"));
+      }
+
+      if (tg?.SettingsButton) {
+        try {
+          tg.SettingsButton.show();
+          tg.SettingsButton.onClick(() => setActiveTab("settings"));
+        } catch (_) {}
+      }
+
+      if (tg?.onEvent) {
+        tg.onEvent("themeChanged", () => {
+          applyTheme();
+          renderStatus();
+        });
+        tg.onEvent("viewportChanged", renderStatus);
+        tg.onEvent("safeAreaChanged", renderStatus);
+        tg.onEvent("contentSafeAreaChanged", renderStatus);
+        tg.onEvent("fullscreenChanged", renderStatus);
+        tg.onEvent("activated", renderStatus);
+        tg.onEvent("deactivated", renderStatus);
+      }
+    }
+
+    function boot() {
+      detectTelegram();
+      applyTheme();
+      loadSettings();
+      translatePage();
+      loadCrm();
+      detectAdmin();
+      bindEvents();
+      renderAll();
+    }
+
+    boot();
   </script>
 </body>
 </html>
